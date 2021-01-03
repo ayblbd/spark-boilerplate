@@ -7,8 +7,9 @@ object Read {
 
   def readFromCsvFileWithSchema(location: String, schema: String): DataFrame =
     spark.read
+      .option("header", "true")
       .schema(schema)
-      .csv(location)
+      .csv(getClass.getResource(location).getPath)
 
   def readFromCsvFile(location: String): DataFrame =
     spark.read

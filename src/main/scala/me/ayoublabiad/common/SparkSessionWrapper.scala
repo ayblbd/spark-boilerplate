@@ -7,6 +7,5 @@ trait SparkSessionWrapper {
     .builder()
     .appName("FlightsJob")
     .config("spark.master", "local")
-    .enableHiveSupport()
     .getOrCreate()
 }
