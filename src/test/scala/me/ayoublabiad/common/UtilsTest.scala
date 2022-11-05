@@ -1,6 +1,5 @@
 package me.ayoublabiad.common
 
-import dijon.obj
 import me.ayoublabiad.common.Utils.getParamFromTable
 import org.apache.spark.sql.DataFrame
 
@@ -8,7 +7,7 @@ class UtilsTest extends BaseTest {
   import spark.implicits._
   "getParamFromTable" should "turn the threshold if it exists" in {
     val input: DataFrame = createDataFrame(
-      obj(
+      Map(
         "minFlightsThreshold" -> 4
       )
     )

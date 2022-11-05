@@ -1,28 +1,47 @@
 package me.ayoublabiad.common
 
 import com.github.mrpowers.spark.fast.tests.DataFrameComparer
-import dijon.{arr, obj, SomeJson}
 import org.apache.spark.sql.DataFrame
+import org.apache.spark.sql.functions.col
+import org.json4s.DefaultFormats
+import org.json4s.jackson.Json
 import org.scalatest.flatspec.AnyFlatSpec
 
 trait BaseTest extends AnyFlatSpec with SparkSessionTestWrapper with DataFrameComparer {
 
   import spark.implicits._
+  lazy val emptyDataFrame: DataFrame = spark.emptyDataFrame
 
-  def createDataFrame(data: SomeJson): DataFrame = {
-    spark.read.json(Seq(data.toString()).toDS)
+  def createEmptyDataFrame(columnNames: String*): DataFrame =
+    createDataFrame(
+      columnNames
+        .map(col => Map(col -> null)): _*)
+
+  def createDataFrame(data: Map[String, Any]*): DataFrame =
+    spark.read.json(Seq(Json(DefaultFormats).write(data)).toDS)
+
+  def assertDataFrameEquality(
+    actual: DataFrame,
+    expected: DataFrame,
+    ignoreNullable: Boolean = true,
+    debug: Boolean = false
+  ): Any = {
+    def sortColumns(df: DataFrame): DataFrame =
+      df.select(df.columns.sorted.map(col): _*)
+    val ActualWithSortedColumns = sortColumns(actual)
+    val expectedWithSortedColumns = sortColumns(expected)
+    if (debug) {
+      println("Actual: ")
+      ActualWithSortedColumns.show(false)
+      println("Expected: ")
+      expectedWithSortedColumns.show(false)
+    }
+    assertSmallDataFrameEquality(
+      ActualWithSortedColumns,
+      expectedWithSortedColumns,
+      ignoreNullable,
+      orderedComparison = false
+    )
   }
 
-  def createEmptyDataFrame(columnNames: String*): DataFrame = {
-    val columns: Seq[SomeJson] = columnNames
-      .map(col => obj(col -> None))
-    createDataFrame(columns: _*)
-  }
-
-  def createDataFrame(data: SomeJson*): DataFrame = {
-    spark.read.json(Seq(arr(data: _*).toString()).toDS)
-  }
-
-  def assertDataFrameEquality(actual: DataFrame, expected: DataFrame): Unit =
-    assertSmallDataFrameEquality(actual, expected, ignoreNullable = true, orderedComparison = false)
 }
