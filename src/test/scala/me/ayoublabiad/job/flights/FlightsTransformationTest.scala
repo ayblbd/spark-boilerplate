@@ -22,6 +22,6 @@ class FlightsTransformationTest extends BaseTest {
       ("morocco", 8L)
     ).toDF("destination", "total_count")
 
-    assertSmallDataFrameEquality(actual, expected, ignoreNullable = true, orderedComparison = false)
+    assertDataFrameEquality(actual, expected)
   }
 }

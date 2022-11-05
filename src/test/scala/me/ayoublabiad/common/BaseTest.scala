@@ -13,13 +13,16 @@ trait BaseTest extends AnyFlatSpec with SparkSessionTestWrapper with DataFrameCo
     spark.read.json(Seq(data.toString()).toDS)
   }
 
-  def createDataFrame(data: SomeJson*): DataFrame = {
-    spark.read.json(Seq(arr(data: _*).toString()).toDS)
-  }
-
   def createEmptyDataFrame(columnNames: String*): DataFrame = {
     val columns: Seq[SomeJson] = columnNames
       .map(col => obj(col -> None))
     createDataFrame(columns: _*)
   }
+
+  def createDataFrame(data: SomeJson*): DataFrame = {
+    spark.read.json(Seq(arr(data: _*).toString()).toDS)
+  }
+
+  def assertDataFrameEquality(actual: DataFrame, expected: DataFrame): Unit =
+    assertSmallDataFrameEquality(actual, expected, ignoreNullable = true, orderedComparison = false)
 }

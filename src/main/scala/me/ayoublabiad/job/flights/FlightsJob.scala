@@ -12,6 +12,6 @@ object FlightsJob extends Job {
 
     val destinationsWithTotalCount = FlightsTransformation.getDestinationsWithTotalCount(flights)
 
-    destinationsWithTotalCount.show(10, false)
+    destinationsWithTotalCount.show(10, truncate = false)
   }
 }

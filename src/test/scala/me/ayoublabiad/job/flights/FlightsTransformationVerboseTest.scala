@@ -40,7 +40,7 @@ class FlightsTransformationVerboseTest extends BaseTest {
       )
     )
 
-    assertSmallDataFrameEquality(actual, expected, ignoreNullable = true, orderedComparison = false)
+    assertDataFrameEquality(actual, expected)
   }
 
 }

@@ -18,5 +18,5 @@ object Read {
       .csv(location)
 
   def readTableFromHive(database: String, tableName: String): DataFrame =
-    spark.sql(s"select * from $database.$tableName")
+    spark.table(s"$database.$tableName")
 }
