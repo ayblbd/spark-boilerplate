@@ -1,7 +1,7 @@
 package me.ayoublabiad.job.flights
 
 import com.typesafe.config.Config
-import me.ayoublabiad.io.Read.readFromCsvFileWithSchema
+import me.ayoublabiad.io.csv.CsvReader.readFromCsvFileWithSchema
 import me.ayoublabiad.job.Job
 import org.apache.spark.sql.{DataFrame, SparkSession}
 

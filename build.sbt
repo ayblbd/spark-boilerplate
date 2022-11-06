@@ -22,6 +22,7 @@ scalacOptions ++= List(
 libraryDependencies ++= Seq(
   "org.apache.spark" %% "spark-core" % sparkVersion,
   "org.apache.spark" %% "spark-sql" % sparkVersion,
+  "org.apache.spark" %% "spark-streaming" % sparkVersion,
   "com.typesafe" % "config" % "1.4.2",
   "org.apache.hbase.connectors.spark" % "hbase-spark" % "1.0.0",
   "com.fasterxml.jackson.module" %% "jackson-module-scala" % "2.13.4",

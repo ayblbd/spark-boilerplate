@@ -93,8 +93,8 @@ rawDataFrame
 
 ```scala
 import com.typesafe.config.Config
-import me.ayoublabiad.io.Read.readTableFromHive
-import me.ayoublabiad.io.Write
+import me.ayoublabiad.io.csv.CsvReader.readTableFromHive
+import me.ayoublabiad.io.csv.CsvWriter
 import me.ayoublabiad.job.Job
 import org.apache.spark.sql.functions.{col, lit}
 import org.apache.spark.sql.{DataFrame, SparkSession}
@@ -107,9 +107,10 @@ object FlightsJob extends Job {
 
     val destinationsWithTotalCount = FlightsTransformation.getDestinationsWithTotalCount(flights)
 
-    Write.writeTohive(spark, filteredDestinations, db, "flights_total_count")
+    CsvWriter.writeTohive(spark, filteredDestinations, db, "flights_total_count")
   }
 }
+
 ```
 
 - **Job.scala**: In a trait to bind the jobs implementations.
