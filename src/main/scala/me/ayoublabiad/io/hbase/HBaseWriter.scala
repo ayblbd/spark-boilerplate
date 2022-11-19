@@ -15,19 +15,16 @@ object HBaseWriter {
         )
       )
 
-    def toHbase(cf: String = "d", options: Map[String, String]): Unit = {
-      val changedTypes = changeTypes(df)
-
-      changedTypes.write
+    def toHbase(cf: String = "d", options: Map[String, String]): Unit =
+      df.write
         .format("org.apache.hadoop.hbase.spark")
         .option("hbase.spark.use.hbasecontext", value = false)
         .option(
           "hbase.columns.mapping",
-          f"key STRING :key, ${hbaseColumnsMapping(changedTypes, cf)}"
+          f"key STRING :key, ${hbaseColumnsMapping(df, cf)}"
         )
         .options(options)
         .save()
-    }
   }
 
   def stringToColumn(
@@ -35,6 +32,11 @@ object HBaseWriter {
     columns: Seq[String]
   ): Seq[Column] =
     columns.map(c => if (dfColumns.contains(c)) col(c) else lit(c))
+
+  def filterKeyEmptyNullValues(df: DataFrame, columns: Seq[String]): DataFrame =
+    columns
+      .filter(c => df.columns.contains(c))
+      .foldLeft(df)((df, c) => df.filter(col(c).isNotNull && trim(col(c)) =!= lit("")))
 
   def hbaseColumnsMapping(df: DataFrame, cf: String): String =
     df.schema.fields
@@ -56,27 +58,12 @@ object HBaseWriter {
           f"""$c FLOAT $cf:$c"""
         case StructField(c: String, _: ShortType, _, _) =>
           f"""$c SHORT $cf:$c"""
+        case StructField(c: String, _: TimestampType, _, _) =>
+          f"""$c TIMESTAMP $cf:$c"""
+        case StructField(c: String, _: DateType, _, _) =>
+          f"""$c DATE $cf:$c"""
         case StructField(c: String, _: DecimalType, _, _) =>
-          f"""$c DOUBLE $cf:$c"""
+          f"""$c STRING $cf:$c"""
       }
       .mkString(",")
-
-  def changeTypes(df: DataFrame): DataFrame = {
-    val schema = df.schema.fields.map {
-      case sf @ (StructField(_: String, _: DateType, _, _) | StructField(_: String, _: TimestampType, _, _)) =>
-        col(sf.name).cast(StringType).as(sf.name)
-      case StructField(name: String, _: DecimalType, _, _) =>
-        col(name).cast(DoubleType)
-      case StructField(name: String, _: StringType, _, _) =>
-        when(trim(col(name)) =!= lit(""), col(name)).as(name)
-      case f => col(f.name)
-    }
-
-    df.select(schema: _*)
-  }
-
-  def filterKeyEmptyNullValues(df: DataFrame, columns: Seq[String]): DataFrame =
-    columns
-      .filter(c => df.columns.contains(c))
-      .foldLeft(df)((df, c) => df.filter(col(c).isNotNull && trim(col(c)) =!= lit("")))
 }
