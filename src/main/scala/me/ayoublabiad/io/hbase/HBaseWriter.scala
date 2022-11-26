@@ -36,7 +36,7 @@ object HBaseWriter {
   def filterKeyEmptyNullValues(df: DataFrame, columns: Seq[String]): DataFrame =
     columns
       .filter(c => df.columns.contains(c))
-      .foldLeft(df)((df, c) => df.filter(col(c).isNotNull && trim(col(c)) =!= lit("")))
+      .foldLeft(df)((df, c) => df.filter(trim(col(c)) =!= lit("")))
 
   def hbaseColumnsMapping(df: DataFrame, cf: String): String =
     df.schema.fields
