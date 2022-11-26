@@ -20,10 +20,15 @@ scalacOptions ++= List(
   "-Ywarn-unused"
 )
 
+assemblyMergeStrategy in assembly := {
+  case PathList("META-INF", _*) => MergeStrategy.discard
+  case _ => MergeStrategy.first
+}
+
 libraryDependencies ++= Seq(
-  "org.apache.spark" %% "spark-core" % sparkVersion,
-  "org.apache.spark" %% "spark-sql" % sparkVersion,
-  "org.apache.spark" %% "spark-streaming" % sparkVersion,
+  "org.apache.spark" %% "spark-core" % sparkVersion % "provided",
+  "org.apache.spark" %% "spark-sql" % sparkVersion % "provided",
+  "org.apache.spark" %% "spark-streaming" % sparkVersion % "provided",
   "com.typesafe" % "config" % "1.4.2",
   "org.apache.hbase" % "hbase-client" % hbaseVersion,
   "org.apache.hbase" % "hbase-server" % hbaseVersion,
