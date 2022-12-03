@@ -1,15 +1,13 @@
 package me.ayoublabiad.common
 
-import org.apache.spark.sql.{DataFrame, SparkSession}
+import org.apache.spark.sql.DataFrame
 
 object Utils {
-  def getParamFromTable(spark: SparkSession, dataFrame: DataFrame, paramColumnName: String): Long = {
-    import spark.implicits._
+  def getParamFromTable(dataFrame: DataFrame, paramColumnName: String): Long =
     dataFrame
       .select(paramColumnName)
-      .as[Long]
-      .collect()
+      .collect
       .headOption
+      .map(_.getLong(0))
       .getOrElse(throw new Exception("Threshold not found."))
-  }
 }

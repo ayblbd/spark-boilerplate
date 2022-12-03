@@ -12,7 +12,7 @@ class UtilsTest extends BaseTest {
       )
     )
 
-    val threshold: Long = getParamFromTable(spark, input, "minFlightsThreshold")
+    val threshold: Long = getParamFromTable(input, "minFlightsThreshold")
 
     assert(threshold == 4)
   }
@@ -22,7 +22,7 @@ class UtilsTest extends BaseTest {
 
     val caught =
       intercept[Exception] {
-        getParamFromTable(spark, input, "minFlightsThreshold")
+        getParamFromTable(input, "minFlightsThreshold")
       }
 
     assert(caught.getMessage == "Threshold not found.")
